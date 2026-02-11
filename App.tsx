@@ -68,23 +68,14 @@ const App: React.FC = () => {
   // Real history would require sampling BAC at historical intervals.
   const getHistoryData = useCallback(() => {
      if (drinks.length === 0) return [];
-     // Just mock past hour trend or future projection?
-     // Let's do a future projection for the visualizer as it looks cooler (Sobriety curve)
-     // Or a simple "Last 4 hours" calculation.
      
      const points = [];
      const now = Date.now();
-     // Create 10 points covering last 4 hours
+     // Create 5 points covering last 4 hours
      for(let i = 4; i >= 0; i--) {
         const t = now - (i * 60 * 60 * 1000);
-        // We temporarily filter drinks that existed at time t
-        const drinksAtTime = drinks.filter(d => d.timestamp < t);
-        // We use a modified calculate function that treats 't' as 'now'
-        // But for simplicity in this demo without refactoring service heavily, 
-        // we will just pass current status for the sparkline visual if needed, 
-        // OR better: Just map the drinks to bars. 
-        // Let's stick to a simple visual aid:
-        points.push({ time: t, bac: 0 }); // Placeholder. Implementing full retroactive BAC curve is complex.
+        // Placeholder for future implementation of historical BAC calculation
+        points.push({ time: t, bac: 0 }); 
      }
      return points;
   }, [drinks]);
@@ -116,7 +107,7 @@ const App: React.FC = () => {
         )}
         
         {view === AppView.DASHBOARD && (
-          <Dashboard status={bacStatus} historyData={[]} />
+          <Dashboard status={bacStatus} historyData={getHistoryData()} />
         )}
 
         {view === AppView.ADD_DRINK && (

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Drink } from '../types';
 import { PRESET_DRINKS } from '../constants';
 import { parseDrinkWithGemini } from '../services/geminiService';
-import { Plus, Search, Loader2, Sparkles, Wine, Beer, Martini } from 'lucide-react';
+import { Search, Loader2, Sparkles } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 
 interface AddDrinkProps {
