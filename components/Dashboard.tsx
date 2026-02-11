@@ -1,6 +1,7 @@
+
 import React, { useMemo } from 'react';
 import { BacStatus } from '../types';
-import { Droplets, Clock, Sparkles, Zap } from 'lucide-react';
+import { Clock, Zap } from 'lucide-react';
 import { AreaChart, Area, ResponsiveContainer, YAxis } from 'recharts';
 
 interface DashboardProps {

@@ -1,12 +1,12 @@
 
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { Drink } from '../types';
 import { 
   BEER_LIBRARY, SPIRIT_LIBRARY, GENERIC_BEERS, GENERIC_WINES,
   BEER_PRESETS, SHOT_SIZES, GLASS_SHAPES, MIXERS,
   DrinkReference, MixerReference
 } from '../constants';
-import { Search, ChevronLeft, Check, Beer, Wine, Martini, Info, X } from 'lucide-react';
+import { Search, ChevronLeft, X } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 
 interface AddDrinkProps {
@@ -129,7 +129,7 @@ export const AddDrink: React.FC<AddDrinkProps> = ({ onAdd, onClose }) => {
     fillPercent2 = 0, 
     color2 = 'transparent',
     interactive = false,
-    onInteract = (p: number) => {}
+    onInteract = () => {}
   }: { 
     glassId: string, 
     fillPercent1: number, 

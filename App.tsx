@@ -7,7 +7,7 @@ import { AddDrink } from './components/AddDrink';
 import { DrinkList } from './components/DrinkList';
 import { AppView, Drink, UserProfile, BacStatus } from './types';
 import { calculateBac } from './services/bacService';
-import { LayoutDashboard, PlusCircle, History, Settings as SettingsIcon, User } from 'lucide-react';
+import { LayoutDashboard, PlusCircle, History, User } from 'lucide-react';
 
 const App: React.FC = () => {
   // -- State --
@@ -96,6 +96,7 @@ const App: React.FC = () => {
   const NavButton = ({ target, icon: Icon, label }: { target: AppView, icon: any, label: string }) => (
     <button 
       onClick={() => setView(target)}
+      aria-label={label}
       className={`relative group flex flex-col items-center justify-center w-14 h-14 rounded-2xl transition-all duration-300 ${
         view === target 
           ? 'text-white bg-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.1)] border border-white/20' 
@@ -147,6 +148,7 @@ const App: React.FC = () => {
             <div className="mx-2">
               <button 
                 onClick={() => setView(AppView.ADD_DRINK)}
+                aria-label="Add Drink"
                 className="w-16 h-16 rounded-[24px] bg-gradient-to-br from-white to-gray-200 text-black flex items-center justify-center shadow-[0_0_40px_rgba(255,255,255,0.4)] hover:scale-105 active:scale-95 transition-all border-4 border-white/10"
               >
                 <PlusCircle size={32} className="text-black/80" strokeWidth={2.5} />
@@ -158,6 +160,7 @@ const App: React.FC = () => {
             {/* Profile Button */}
              <button 
               onClick={() => setView(AppView.SETTINGS)}
+              aria-label="Settings"
               className={`relative group flex flex-col items-center justify-center w-14 h-14 rounded-2xl transition-all duration-300 ${
                 view === AppView.SETTINGS
                   ? 'text-white bg-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.1)] border border-white/20' 

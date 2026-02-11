@@ -1,4 +1,4 @@
-import { Drink } from './types';
+
 
 export const METABOLISM_RATE = 0.015; // Average elimination rate per hour
 export const ALCOHOL_DENSITY = 0.789; // g/ml
