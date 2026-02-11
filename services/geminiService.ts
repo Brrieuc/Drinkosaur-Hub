@@ -1,7 +1,6 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
-const apiKey = process.env.API_KEY || '';
-const ai = new GoogleGenAI({ apiKey });
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 export const parseDrinkWithGemini = async (description: string): Promise<{ name: string; volumeMl: number; abv: number; icon: string } | null> => {
   try {
