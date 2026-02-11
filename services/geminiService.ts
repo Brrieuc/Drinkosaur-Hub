@@ -1,8 +1,16 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 export const parseDrinkWithGemini = async (description: string): Promise<{ name: string; volumeMl: number; abv: number; icon: string } | null> => {
+  const apiKey = process.env.API_KEY;
+  
+  // Prevent crash if API key is missing
+  if (!apiKey) {
+    console.warn("API_KEY is missing. AI features will not work.");
+    return null;
+  }
+
+  const ai = new GoogleGenAI({ apiKey });
+
   try {
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',

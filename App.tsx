@@ -11,14 +11,26 @@ import { LayoutDashboard, PlusCircle, History, Settings as SettingsIcon } from '
 const App: React.FC = () => {
   // -- State --
   const [view, setView] = useState<AppView>(AppView.SETTINGS);
+  
+  // Safe parsing for localStorage
   const [user, setUser] = useState<UserProfile>(() => {
-    const saved = localStorage.getItem('drinkosaur_user');
-    return saved ? JSON.parse(saved) : { weightKg: 0, gender: 'male', isSetup: false };
+    try {
+      const saved = localStorage.getItem('drinkosaur_user');
+      return saved ? JSON.parse(saved) : { weightKg: 0, gender: 'male', isSetup: false };
+    } catch (e) {
+      console.error("Failed to parse user profile", e);
+      return { weightKg: 0, gender: 'male', isSetup: false };
+    }
   });
   
   const [drinks, setDrinks] = useState<Drink[]>(() => {
-    const saved = localStorage.getItem('drinkosaur_drinks');
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem('drinkosaur_drinks');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      console.error("Failed to parse drinks", e);
+      return [];
+    }
   });
 
   const [bacStatus, setBacStatus] = useState<BacStatus>({ 
@@ -64,8 +76,6 @@ const App: React.FC = () => {
   };
 
   // Generate simple history data for chart based on current list
-  // Note: This is a simplified projection for the visualizer.
-  // Real history would require sampling BAC at historical intervals.
   const getHistoryData = useCallback(() => {
      if (drinks.length === 0) return [];
      
@@ -74,7 +84,6 @@ const App: React.FC = () => {
      // Create 5 points covering last 4 hours
      for(let i = 4; i >= 0; i--) {
         const t = now - (i * 60 * 60 * 1000);
-        // Placeholder for future implementation of historical BAC calculation
         points.push({ time: t, bac: 0 }); 
      }
      return points;
@@ -133,8 +142,6 @@ const App: React.FC = () => {
               </button>
             </div>
             <NavButton target={AppView.DASHBOARD} icon={LayoutDashboard} label="Monitor" />
-            {/* Settings is hidden in main nav, accessible via Dashboard or special logic if needed. 
-                For this demo, let's put it on the right to allow re-config */}
             <NavButton target={AppView.SETTINGS} icon={SettingsIcon} label="Profile" />
           </div>
         </div>
