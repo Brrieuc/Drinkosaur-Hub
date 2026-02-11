@@ -93,6 +93,13 @@ const App: React.FC = () => {
 
 
   // -- Navigation Bar --
+  const t = {
+    history: user.language === 'fr' ? 'Historique' : 'History',
+    monitor: user.language === 'fr' ? 'Moniteur' : 'Monitor',
+    add: user.language === 'fr' ? 'Ajouter' : 'Add Drink',
+    settings: user.language === 'fr' ? 'Paramètres' : 'Settings'
+  };
+
   const NavButton = ({ target, icon: Icon, label }: { target: AppView, icon: any, label: string }) => (
     <button 
       onClick={() => setView(target)}
@@ -126,15 +133,15 @@ const App: React.FC = () => {
         )}
         
         {view === AppView.DASHBOARD && (
-          <Dashboard status={bacStatus} historyData={getHistoryData()} />
+          <Dashboard status={bacStatus} historyData={getHistoryData()} language={user.language} />
         )}
 
         {view === AppView.ADD_DRINK && (
-          <AddDrink onAdd={handleAddDrink} onClose={() => setView(AppView.DASHBOARD)} />
+          <AddDrink onAdd={handleAddDrink} onClose={() => setView(AppView.DASHBOARD)} language={user.language} />
         )}
 
         {view === AppView.HISTORY && (
-          <DrinkList drinks={drinks} onRemove={handleRemoveDrink} />
+          <DrinkList drinks={drinks} onRemove={handleRemoveDrink} language={user.language} />
         )}
       </main>
 
@@ -142,25 +149,25 @@ const App: React.FC = () => {
       {user.isSetup && (
         <div className="absolute bottom-6 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none">
           <div className="glass-panel-3d rounded-[32px] p-2 flex items-center gap-2 shadow-2xl backdrop-blur-xl pointer-events-auto">
-            <NavButton target={AppView.HISTORY} icon={History} label="History" />
+            <NavButton target={AppView.HISTORY} icon={History} label={t.history} />
             
             {/* Floating Action Button */}
             <div className="mx-2">
               <button 
                 onClick={() => setView(AppView.ADD_DRINK)}
-                aria-label="Add Drink"
+                aria-label={t.add}
                 className="w-16 h-16 rounded-[24px] bg-gradient-to-br from-white to-gray-200 text-black flex items-center justify-center shadow-[0_0_40px_rgba(255,255,255,0.4)] hover:scale-105 active:scale-95 transition-all border-4 border-white/10"
               >
                 <PlusCircle size={32} className="text-black/80" strokeWidth={2.5} />
               </button>
             </div>
             
-            <NavButton target={AppView.DASHBOARD} icon={LayoutDashboard} label="Monitor" />
+            <NavButton target={AppView.DASHBOARD} icon={LayoutDashboard} label={t.monitor} />
             
             {/* Profile Button */}
              <button 
               onClick={() => setView(AppView.SETTINGS)}
-              aria-label="Settings"
+              aria-label={t.settings}
               className={`relative group flex flex-col items-center justify-center w-14 h-14 rounded-2xl transition-all duration-300 ${
                 view === AppView.SETTINGS
                   ? 'text-white bg-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.1)] border border-white/20' 

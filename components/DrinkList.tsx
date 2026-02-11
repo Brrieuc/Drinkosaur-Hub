@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Drink } from '../types';
 import { Trash2 } from 'lucide-react';
@@ -5,19 +6,25 @@ import { Trash2 } from 'lucide-react';
 interface DrinkListProps {
   drinks: Drink[];
   onRemove: (id: string) => void;
+  language?: 'en' | 'fr';
 }
 
-export const DrinkList: React.FC<DrinkListProps> = ({ drinks, onRemove }) => {
+export const DrinkList: React.FC<DrinkListProps> = ({ drinks, onRemove, language = 'en' }) => {
   // Sort by time descending
   const sortedDrinks = [...drinks].sort((a, b) => b.timestamp - a.timestamp);
 
+  const t = {
+    history: language === 'fr' ? 'Historique' : 'History',
+    noDrinks: language === 'fr' ? 'Aucune boisson enregistrée.' : 'No drinks logged yet.'
+  };
+
   return (
     <div className="flex flex-col h-full p-6 animate-fade-in">
-      <h2 className="text-2xl font-bold text-white mb-6">History</h2>
+      <h2 className="text-2xl font-bold text-white mb-6">{t.history}</h2>
       
       {sortedDrinks.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center text-white/30">
-          <p>No drinks logged yet.</p>
+          <p>{t.noDrinks}</p>
         </div>
       ) : (
         <div className="space-y-3 overflow-y-auto no-scrollbar pb-20">

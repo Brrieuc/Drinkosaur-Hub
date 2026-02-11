@@ -21,140 +21,194 @@ export const THEME_COLORS = {
 
 export interface DrinkReference {
   name: string;
+  name_fr?: string;
   abv: number;
   type: 'beer' | 'spirit' | 'wine' | 'other';
   color: string; // Hex or rgba for liquid rendering
+  carbonated?: boolean; // Controls foam and bubbles
   tags?: string[];
 }
 
 export interface MixerReference {
   name: string;
   color: string;
+  carbonated?: boolean;
 }
 
 export const BEER_LIBRARY: DrinkReference[] = [
   // Classiques / Lagers (Gold/Yellow)
-  { name: 'Heineken', abv: 5.0, type: 'beer', color: '#FCD34D' },
-  { name: 'Stella Artois', abv: 5.0, type: 'beer', color: '#FCD34D' },
-  { name: '1664', abv: 5.5, type: 'beer', color: '#FBBF24' },
-  { name: 'Kronenbourg', abv: 4.2, type: 'beer', color: '#FCD34D' },
-  { name: 'Budweiser', abv: 5.0, type: 'beer', color: '#FEF08A' },
-  { name: 'Corona', abv: 4.5, type: 'beer', color: '#FEF9C3' },
+  { name: 'Heineken', abv: 5.0, type: 'beer', color: '#FCD34D', carbonated: true },
+  { name: 'Stella Artois', abv: 5.0, type: 'beer', color: '#FCD34D', carbonated: true },
+  { name: '1664', abv: 5.5, type: 'beer', color: '#FBBF24', carbonated: true },
+  { name: 'Kronenbourg', abv: 4.2, type: 'beer', color: '#FCD34D', carbonated: true },
+  { name: 'Budweiser', abv: 5.0, type: 'beer', color: '#FEF08A', carbonated: true },
+  { name: 'Corona', abv: 4.5, type: 'beer', color: '#FEF9C3', carbonated: true },
   
   // Triples & Fortes (Amber/Dark Gold)
-  { name: 'Paix-Dieu', abv: 10.0, type: 'beer', color: '#F59E0B' },
-  { name: 'Rince-Cochon', abv: 8.5, type: 'beer', color: '#FCD34D' },
-  { name: 'La Chouffe', abv: 8.0, type: 'beer', color: '#F59E0B' },
-  { name: 'Tripel Karmeliet', abv: 8.4, type: 'beer', color: '#fbbf24' },
-  { name: 'Duvel', abv: 8.5, type: 'beer', color: '#FEF3C7' },
-  { name: 'Chimay Bleue', abv: 9.0, type: 'beer', color: '#451a03' }, // Dark
-  { name: 'Rochefort 10', abv: 11.3, type: 'beer', color: '#3E1F11' }, // Very Dark
-  { name: 'Guinness', abv: 4.2, type: 'beer', color: '#000000' }, // Black
+  { name: 'Paix-Dieu', abv: 10.0, type: 'beer', color: '#F59E0B', carbonated: true },
+  { name: 'Rince-Cochon', abv: 8.5, type: 'beer', color: '#FCD34D', carbonated: true },
+  { name: 'La Chouffe', abv: 8.0, type: 'beer', color: '#F59E0B', carbonated: true },
+  { name: 'Tripel Karmeliet', abv: 8.4, type: 'beer', color: '#fbbf24', carbonated: true },
+  { name: 'Duvel', abv: 8.5, type: 'beer', color: '#FEF3C7', carbonated: true },
+  { name: 'Chimay Bleue', abv: 9.0, type: 'beer', color: '#451a03', carbonated: true }, // Dark
+  { name: 'Rochefort 10', abv: 11.3, type: 'beer', color: '#3E1F11', carbonated: true }, // Very Dark
+  { name: 'Guinness', abv: 4.2, type: 'beer', color: '#000000', carbonated: false }, // Creamy, not fizzy in same way, but handled as beer
 
   // IPAs (Orange)
-  { name: 'Punk IPA', abv: 5.4, type: 'beer', color: '#F59E0B' },
-  { name: 'Lagunitas IPA', abv: 6.2, type: 'beer', color: '#D97706' },
+  { name: 'Punk IPA', abv: 5.4, type: 'beer', color: '#F59E0B', carbonated: true },
+  { name: 'Lagunitas IPA', abv: 6.2, type: 'beer', color: '#D97706', carbonated: true },
 
   // Blanches (Pale Yellow)
-  { name: 'Hoegaarden', abv: 4.9, type: 'beer', color: '#FEF9C3' },
-  { name: '1664 Blanc', abv: 5.0, type: 'beer', color: '#FEF9C3' },
-  { name: 'Leffe Ruby', abv: 5.0, type: 'beer', color: '#9F1239' }, // Red
+  { name: 'Hoegaarden', abv: 4.9, type: 'beer', color: '#FEF9C3', carbonated: true },
+  { name: '1664 Blanc', abv: 5.0, type: 'beer', color: '#FEF9C3', carbonated: true },
+  { name: 'Leffe Ruby', abv: 5.0, type: 'beer', color: '#9F1239', carbonated: true }, // Red
 ];
 
 export const SPIRIT_LIBRARY: DrinkReference[] = [
   // Whisky (Amber)
-  { name: "Jack Daniel's", abv: 40, type: 'spirit', color: '#B45309' },
-  { name: "Jameson", abv: 40, type: 'spirit', color: '#D97706' },
-  { name: "Chivas Regal", abv: 40, type: 'spirit', color: '#B45309' },
-  { name: "Nikka", abv: 45, type: 'spirit', color: '#92400E' },
+  { name: "Jack Daniel's", abv: 40, type: 'spirit', color: '#B45309', carbonated: false },
+  { name: "Jameson", abv: 40, type: 'spirit', color: '#D97706', carbonated: false },
+  { name: "Chivas Regal", abv: 40, type: 'spirit', color: '#B45309', carbonated: false },
+  { name: "Nikka", abv: 45, type: 'spirit', color: '#92400E', carbonated: false },
 
   // Vodka (Clear)
-  { name: "Grey Goose", abv: 40, type: 'spirit', color: '#E0F2FE' },
-  { name: "Absolut", abv: 40, type: 'spirit', color: '#E0F2FE' },
-  { name: "Smirnoff", abv: 37.5, type: 'spirit', color: '#E0F2FE' },
+  { name: "Grey Goose", abv: 40, type: 'spirit', color: '#E0F2FE', carbonated: false },
+  { name: "Absolut", abv: 40, type: 'spirit', color: '#E0F2FE', carbonated: false },
+  { name: "Smirnoff", abv: 37.5, type: 'spirit', color: '#E0F2FE', carbonated: false },
 
   // Rhum (Brown/Clear)
-  { name: "Captain Morgan", abv: 35, type: 'spirit', color: '#78350F' },
-  { name: "Havana Club 3 ans", abv: 40, type: 'spirit', color: '#FEF3C7' },
-  { name: "Diplomatico", abv: 40, type: 'spirit', color: '#451a03' },
-  { name: "Don Papa", abv: 40, type: 'spirit', color: '#92400E' },
+  { name: "Captain Morgan", abv: 35, type: 'spirit', color: '#78350F', carbonated: false },
+  { name: "Havana Club 3 ans", abv: 40, type: 'spirit', color: '#FEF3C7', carbonated: false },
+  { name: "Diplomatico", abv: 40, type: 'spirit', color: '#451a03', carbonated: false },
+  { name: "Don Papa", abv: 40, type: 'spirit', color: '#92400E', carbonated: false },
 
   // Gin (Clear)
-  { name: "Tanqueray", abv: 43, type: 'spirit', color: '#ECFEFF' },
-  { name: "Hendrick's", abv: 41.4, type: 'spirit', color: '#ECFEFF' },
-  { name: "Bombay Sapphire", abv: 40, type: 'spirit', color: '#CFFAFE' },
+  { name: "Tanqueray", abv: 43, type: 'spirit', color: '#ECFEFF', carbonated: false },
+  { name: "Hendrick's", abv: 41.4, type: 'spirit', color: '#ECFEFF', carbonated: false },
+  { name: "Bombay Sapphire", abv: 40, type: 'spirit', color: '#CFFAFE', carbonated: false },
 
   // Tequila (Clear/Gold)
-  { name: "Jose Cuervo", abv: 38, type: 'spirit', color: '#FEF3C7' },
-  { name: "Patron Silver", abv: 40, type: 'spirit', color: '#E0F2FE' },
+  { name: "Jose Cuervo", abv: 38, type: 'spirit', color: '#FEF3C7', carbonated: false },
+  { name: "Patron Silver", abv: 40, type: 'spirit', color: '#E0F2FE', carbonated: false },
 
   // Liqueurs
-  { name: "Jägermeister", abv: 35, type: 'spirit', color: '#280802' },
-  { name: "Ricard", abv: 45, type: 'spirit', color: '#FEF9C3' },
-  { name: "Aperol", abv: 11, type: 'spirit', color: '#FB923C' },
-  { name: "Campari", abv: 25, type: 'spirit', color: '#DC2626' },
-  { name: "Get 27", abv: 21, type: 'spirit', color: '#22C55E' },
-  { name: "Baileys", abv: 17, type: 'spirit', color: '#E7E5E4' },
+  { name: "Jägermeister", abv: 35, type: 'spirit', color: '#280802', carbonated: false },
+  { name: "Ricard", abv: 45, type: 'spirit', color: '#FEF9C3', carbonated: false },
+  { name: "Aperol", abv: 11, type: 'spirit', color: '#FB923C', carbonated: false },
+  { name: "Campari", abv: 25, type: 'spirit', color: '#DC2626', carbonated: false },
+  { name: "Get 27", abv: 21, type: 'spirit', color: '#22C55E', carbonated: false },
+  { name: "Baileys", abv: 17, type: 'spirit', color: '#E7E5E4', carbonated: false },
 ];
 
 export const MIXERS: MixerReference[] = [
-  { name: 'Coca-Cola', color: '#280802' },
-  { name: 'Tonic Water', color: '#E0F2FE' },
-  { name: 'Orange Juice', color: '#FDBA74' },
-  { name: 'Red Bull', color: '#FEF08A' },
-  { name: 'Sprite/7Up', color: '#F0FDFA' },
-  { name: 'Soda Water', color: '#E0F2FE' },
-  { name: 'Cranberry', color: '#BE123C' },
-  { name: 'Ginger Beer', color: '#FEF3C7' },
+  { name: 'Coca-Cola', color: '#280802', carbonated: true },
+  { name: 'Tonic Water', color: '#E0F2FE', carbonated: true },
+  { name: 'Orange Juice', color: '#FDBA74', carbonated: false },
+  { name: 'Red Bull', color: '#FEF08A', carbonated: true },
+  { name: 'Sprite/7Up', color: '#F0FDFA', carbonated: true },
+  { name: 'Soda Water', color: '#E0F2FE', carbonated: true },
+  { name: 'Cranberry', color: '#BE123C', carbonated: false },
+  { name: 'Ginger Beer', color: '#FEF3C7', carbonated: true },
 ];
 
-export const GENERIC_BEERS = [
-  { name: "Lager / Blonde", abv: 5.0, color: '#FCD34D' },
-  { name: "Blanche / White", abv: 4.5, color: '#FEF9C3' },
-  { name: "IPA", abv: 6.0, color: '#F59E0B' },
-  { name: "Triple", abv: 8.5, color: '#D97706' },
-  { name: "Stout / Brune", abv: 5.5, color: '#280802' },
-  { name: "Forte / Strong", abv: 10.0, color: '#B45309' },
+export const GENERIC_BEERS: DrinkReference[] = [
+  { name: "Lager / Blonde", name_fr: "Lager / Blonde", abv: 5.0, type: 'beer', color: '#FCD34D', carbonated: true },
+  { name: "Blanche / White", name_fr: "Blanche", abv: 4.5, type: 'beer', color: '#FEF9C3', carbonated: true },
+  { name: "IPA", name_fr: "IPA", abv: 6.0, type: 'beer', color: '#F59E0B', carbonated: true },
+  { name: "Triple", name_fr: "Triple", abv: 8.5, type: 'beer', color: '#D97706', carbonated: true },
+  { name: "Stout / Brune", name_fr: "Stout / Brune", abv: 5.5, type: 'beer', color: '#280802', carbonated: true }, // Semi-carb
+  { name: "Forte / Strong", name_fr: "Forte", abv: 10.0, type: 'beer', color: '#B45309', carbonated: true },
 ];
 
-export const GENERIC_WINES = [
-  { name: "Red Wine", abv: 13.5, color: '#7f1d1d' },
-  { name: "White Wine", abv: 12.0, color: '#fef9c3' },
-  { name: "Rosé", abv: 12.5, color: '#fda4af' },
-  { name: "Champagne", abv: 12.0, color: '#fef3c7' },
+export const GENERIC_WINES: DrinkReference[] = [
+  { name: "Red Wine", name_fr: "Vin Rouge", abv: 13.5, type: 'wine', color: '#7f1d1d', carbonated: false },
+  { name: "White Wine", name_fr: "Vin Blanc", abv: 12.0, type: 'wine', color: '#fef9c3', carbonated: false },
+  { name: "Rosé", name_fr: "Rosé", abv: 12.5, type: 'wine', color: '#fda4af', carbonated: false },
+  { name: "Champagne", name_fr: "Champagne", abv: 12.0, type: 'wine', color: '#fef3c7', carbonated: true },
 ];
 
+// Presets are originally in French, adding English mapping
 export const BEER_PRESETS = [
-  { label: 'Galopin', ml: 125 },
-  { label: 'Demi', ml: 250 },
-  { label: 'Bouteille', ml: 330 },
-  { label: 'Pinte', ml: 500 },
-  { label: 'Maxi', ml: 1000 },
+  { label: 'Galopin', label_en: 'Small (125)', ml: 125 },
+  { label: 'Demi', label_en: 'Half (250)', ml: 250 },
+  { label: 'Bouteille', label_en: 'Bottle', ml: 330 },
+  { label: 'Pinte', label_en: 'Pint (500)', ml: 500 },
+  { label: 'Maxi', label_en: 'Liter', ml: 1000 },
 ];
 
+// Presets are originally in English, adding French mapping
 export const SHOT_SIZES = [
-  { label: 'Small', ml: 30 },
-  { label: 'Standard', ml: 40 },
-  { label: 'Large', ml: 50 },
+  { label: 'Small', label_fr: 'Petit', ml: 30 },
+  { label: 'Standard', label_fr: 'Standard', ml: 40 },
+  { label: 'Large', label_fr: 'Grand', ml: 50 },
 ];
 
-// Complex SVG paths for Glass Shapes (ViewBox 0 0 100 100)
+// GLASS DEFINITIONS
 export const GLASS_SHAPES = [
-  // Beers / General
-  { id: 'pint', name: 'Pint Glass', capacity: 568, path: 'M 20,4 L 25,90 Q 25,96 50,96 Q 75,96 75,90 L 80,4' },
-  
-  // Wines
-  { id: 'wine_std', name: 'Standard Wine', capacity: 450, path: 'M 30,4 L 30,20 C 10,40 10,70 30,85 L 30,96 L 70,96 L 70,85 C 90,70 90,40 70,20 L 70,4' },
-  { id: 'wine_balloon', name: 'Balloon', capacity: 600, path: 'M 35,4 L 35,15 C 5,40 5,80 35,90 L 35,96 L 65,96 L 65,90 C 95,80 95,40 65,15 L 65,4' },
-  { id: 'flute', name: 'Flute', capacity: 200, path: 'M 38,4 L 40,85 L 35,96 L 65,96 L 60,85 L 62,4' },
-
-  // Cocktails / Spirits
-  { id: 'tumbler', name: 'Tumbler', capacity: 300, path: 'M 15,4 L 20,90 Q 20,96 50,96 Q 80,96 80,90 L 85,4' },
-  { id: 'highball', name: 'Highball', capacity: 350, path: 'M 20,4 L 20,96 L 80,96 L 80,4' },
-  { id: 'rocks', name: 'Rocks', capacity: 250, path: 'M 15,4 L 25,92 L 75,92 L 85,4' },
-  { id: 'martini', name: 'Martini', capacity: 200, path: 'M 5,4 L 50,55 L 95,4 M 50,55 L 50,90 L 30,96 L 70,96' },
-  { id: 'hurricane', name: 'Hurricane', capacity: 450, path: 'M 30,4 C 30,4 20,20 20,35 C 20,50 30,55 35,60 C 40,65 45,70 35,90 L 65,90 C 55,70 60,65 65,60 C 70,55 80,50 80,35 C 80,20 70,4 70,4' },
-  
-  // Shots
-  { id: 'shot', name: 'Shot', capacity: 60, path: 'M 25,10 L 35,96 L 65,96 L 75,10' },
+  { 
+    id: 'pint', 
+    name: 'Pint',
+    name_fr: 'Pinte', 
+    capacity: 568, 
+    path: 'M 20,5 L 24,90 Q 24,97 50,97 Q 76,97 76,90 L 80,5', 
+    mask: 'M 22,5 L 26,90 Q 26,95 50,95 Q 74,95 74,90 L 78,5 Z',
+    liquidBottom: 95,
+    liquidTop: 5,
+    fillType: 'cylinder' 
+  },
+  { 
+    id: 'wine_std', 
+    name: 'Wine',
+    name_fr: 'Vin',
+    capacity: 450, 
+    path: 'M 24,5 L 24,50 C 24,75 76,75 76,50 L 76,5 M 50,75 L 50,92 M 30,96 Q 50,88 70,96', 
+    mask: 'M 26,5 L 26,50 C 26,73 74,73 74,50 L 74,5 Z',
+    liquidBottom: 73,
+    liquidTop: 5,
+    fillType: 'bowl' 
+  },
+  { 
+    id: 'flute', 
+    name: 'Flute',
+    name_fr: 'Flûte',
+    capacity: 200, 
+    path: 'M 38,5 L 40,70 C 40,83 60,83 60,70 L 62,5 M 50,83 L 50,92 M 35,96 Q 50,88 65,96', 
+    mask: 'M 40,5 L 42,70 C 42,81 58,81 58,70 L 60,5 Z',
+    liquidBottom: 81,
+    liquidTop: 5,
+    fillType: 'cylinder'
+  },
+  { 
+    id: 'martini', 
+    name: 'Martini',
+    name_fr: 'Martini',
+    capacity: 200, 
+    path: 'M 10,5 L 50,55 L 90,5 M 50,55 L 50,92 M 30,96 Q 50,88 70,96', 
+    mask: 'M 12,5 L 50,53 L 88,5 Z',
+    liquidBottom: 53,
+    liquidTop: 5,
+    fillType: 'cone' 
+  },
+  { 
+    id: 'tumbler', 
+    name: 'Tumbler',
+    name_fr: 'Tumbler',
+    capacity: 300, 
+    path: 'M 15,10 L 20,90 Q 20,97 50,97 Q 80,97 80,90 L 85,10', 
+    mask: 'M 18,10 L 22,88 Q 22,92 50,92 Q 78,92 78,88 L 82,10 Z',
+    liquidBottom: 92,
+    liquidTop: 10,
+    fillType: 'cylinder'
+  },
+  { 
+    id: 'shot', 
+    name: 'Shot',
+    name_fr: 'Shot',
+    capacity: 60, 
+    path: 'M 30,25 L 35,90 L 65,90 L 70,25', 
+    mask: 'M 32,25 L 37,88 L 63,88 L 68,25 Z',
+    liquidBottom: 88,
+    liquidTop: 25,
+    fillType: 'cylinder'
+  },
 ];
