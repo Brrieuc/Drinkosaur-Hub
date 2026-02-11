@@ -1,3 +1,4 @@
+
 export interface Drink {
   id: string;
   name: string;
@@ -11,6 +12,7 @@ export interface UserProfile {
   weightKg: number;
   gender: 'male' | 'female';
   isSetup: boolean;
+  language: 'en' | 'fr';
 }
 
 export interface BacStatus {

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { Background } from './components/Background';
 import { Settings } from './components/Settings';
@@ -6,7 +7,7 @@ import { AddDrink } from './components/AddDrink';
 import { DrinkList } from './components/DrinkList';
 import { AppView, Drink, UserProfile, BacStatus } from './types';
 import { calculateBac } from './services/bacService';
-import { LayoutDashboard, PlusCircle, History, Settings as SettingsIcon } from 'lucide-react';
+import { LayoutDashboard, PlusCircle, History, Settings as SettingsIcon, User } from 'lucide-react';
 
 const App: React.FC = () => {
   // -- State --
@@ -16,10 +17,11 @@ const App: React.FC = () => {
   const [user, setUser] = useState<UserProfile>(() => {
     try {
       const saved = localStorage.getItem('drinkosaur_user');
-      return saved ? JSON.parse(saved) : { weightKg: 0, gender: 'male', isSetup: false };
+      // Default to 'en' if not present
+      return saved ? { language: 'en', ...JSON.parse(saved) } : { weightKg: 0, gender: 'male', isSetup: false, language: 'en' };
     } catch (e) {
       console.error("Failed to parse user profile", e);
-      return { weightKg: 0, gender: 'male', isSetup: false };
+      return { weightKg: 0, gender: 'male', isSetup: false, language: 'en' };
     }
   });
   
@@ -94,23 +96,30 @@ const App: React.FC = () => {
   const NavButton = ({ target, icon: Icon, label }: { target: AppView, icon: any, label: string }) => (
     <button 
       onClick={() => setView(target)}
-      className={`flex flex-col items-center gap-1 p-2 rounded-2xl transition-all duration-300 ${view === target ? 'text-white scale-110' : 'text-white/40 hover:text-white/70'}`}
+      className={`relative group flex flex-col items-center justify-center w-14 h-14 rounded-2xl transition-all duration-300 ${
+        view === target 
+          ? 'text-white bg-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.1)] border border-white/20' 
+          : 'text-white/40 hover:text-white/80 hover:bg-white/5'
+      }`}
     >
       <Icon 
         size={24} 
         strokeWidth={view === target ? 2.5 : 2} 
-        className={view === target ? 'drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]' : ''}
+        className={`transition-transform duration-300 ${view === target ? 'scale-110 drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]' : ''}`}
       />
-      <span className="text-[10px] font-medium">{label}</span>
+      {/* Active Dot indicator */}
+      {view === target && (
+        <div className="absolute -bottom-1 w-1 h-1 rounded-full bg-white shadow-[0_0_5px_white]" />
+      )}
     </button>
   );
 
   return (
-    <div className="relative w-full h-screen text-white overflow-hidden flex flex-col">
+    <div className="relative w-full h-screen text-white overflow-hidden flex flex-col font-sans selection:bg-fuchsia-500/30">
       <Background />
 
       {/* Main Content Area */}
-      <main className="flex-1 relative overflow-hidden">
+      <main className="flex-1 relative overflow-hidden flex flex-col">
         {view === AppView.SETTINGS && (
           <Settings user={user} onSave={setUser} />
         )}
@@ -128,21 +137,42 @@ const App: React.FC = () => {
         )}
       </main>
 
-      {/* Bottom Navigation (Glass Dock) */}
+      {/* Floating Bottom Navigation (Island Dock) */}
       {user.isSetup && (
-        <div className="px-6 pb-6 pt-2 z-50">
-          <div className="glass-panel rounded-[32px] h-20 px-6 flex items-center justify-between shadow-2xl">
+        <div className="absolute bottom-6 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none">
+          <div className="glass-panel-3d rounded-[32px] p-2 flex items-center gap-2 shadow-2xl backdrop-blur-xl pointer-events-auto">
             <NavButton target={AppView.HISTORY} icon={History} label="History" />
-            <div className="relative -top-6">
+            
+            {/* Floating Action Button */}
+            <div className="mx-2">
               <button 
                 onClick={() => setView(AppView.ADD_DRINK)}
-                className="w-16 h-16 rounded-full bg-white text-black flex items-center justify-center shadow-[0_0_30px_rgba(255,255,255,0.4)] hover:scale-105 active:scale-95 transition-all"
+                className="w-16 h-16 rounded-[24px] bg-gradient-to-br from-white to-gray-200 text-black flex items-center justify-center shadow-[0_0_40px_rgba(255,255,255,0.4)] hover:scale-105 active:scale-95 transition-all border-4 border-white/10"
               >
-                <PlusCircle size={32} />
+                <PlusCircle size={32} className="text-black/80" strokeWidth={2.5} />
               </button>
             </div>
+            
             <NavButton target={AppView.DASHBOARD} icon={LayoutDashboard} label="Monitor" />
-            <NavButton target={AppView.SETTINGS} icon={SettingsIcon} label="Profile" />
+            
+            {/* Profile Button */}
+             <button 
+              onClick={() => setView(AppView.SETTINGS)}
+              className={`relative group flex flex-col items-center justify-center w-14 h-14 rounded-2xl transition-all duration-300 ${
+                view === AppView.SETTINGS
+                  ? 'text-white bg-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.1)] border border-white/20' 
+                  : 'text-white/40 hover:text-white/80 hover:bg-white/5'
+              }`}
+            >
+              <User 
+                size={24} 
+                strokeWidth={view === AppView.SETTINGS ? 2.5 : 2} 
+                className={`transition-transform duration-300 ${view === AppView.SETTINGS ? 'scale-110 drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]' : ''}`}
+              />
+               {view === AppView.SETTINGS && (
+                <div className="absolute -bottom-1 w-1 h-1 rounded-full bg-white shadow-[0_0_5px_white]" />
+              )}
+            </button>
           </div>
         </div>
       )}
