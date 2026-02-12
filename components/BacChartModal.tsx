@@ -44,9 +44,9 @@ export const BacChartModal: React.FC<BacChartModalProps> = ({ drinks, user, onCl
   const peakVal = Math.max(...data.map(d => d.value));
   const maxValue = Math.max(limitValue * 1.5, peakVal * 1.2);
 
-  // Filter Y Axis ticks to avoid clutter (Current, Peak, Limit)
+  // Filter Y Axis ticks to avoid clutter (0, Current, Peak, Limit)
   const yTicks = useMemo(() => {
-      const ticks = [limitValue, currentVal, peakVal];
+      const ticks = [0, limitValue, currentVal, peakVal];
       // Dedup and sort
       return [...new Set(ticks.map(v => parseFloat(v.toFixed(2))))].sort((a,b) => a-b);
   }, [limitValue, currentVal, peakVal]);
@@ -111,7 +111,7 @@ export const BacChartModal: React.FC<BacChartModalProps> = ({ drinks, user, onCl
         {/* Chart Container */}
         <div className="w-full h-[350px] relative bg-gradient-to-b from-[#0f0f13] to-black">
              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={data} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
+                <AreaChart data={data} margin={{ top: 20, right: 0, left: 0, bottom: 0 }}>
                     <defs>
                         <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
                             <stop offset="5%" stopColor="#d946ef" stopOpacity={0.4}/>
@@ -130,7 +130,7 @@ export const BacChartModal: React.FC<BacChartModalProps> = ({ drinks, user, onCl
                     <XAxis 
                         dataKey="time" 
                         type="number" 
-                        domain={['auto', 'auto']} 
+                        domain={['dataMin', 'dataMax']} 
                         ticks={xTicks}
                         tickFormatter={(unix) => new Date(unix).toLocaleTimeString([], { hour: '2-digit', minute:'2-digit' })}
                         stroke="rgba(255,255,255,0.1)"
