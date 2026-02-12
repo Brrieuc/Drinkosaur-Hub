@@ -1,4 +1,5 @@
 
+
 export interface Drink {
   id: string;
   name: string;
@@ -6,6 +7,8 @@ export interface Drink {
   abv: number; // Alcohol by volume percentage (e.g., 5.0)
   timestamp: number; // Unix timestamp in ms
   icon?: string;
+  type?: 'beer' | 'wine' | 'cocktail' | 'spirit' | 'other';
+  isChug?: boolean; // If true, consumption time is 0
 }
 
 export interface UserProfile {
@@ -13,10 +16,13 @@ export interface UserProfile {
   gender: 'male' | 'female';
   isSetup: boolean;
   language: 'en' | 'fr';
+  drinkingSpeed: 'slow' | 'average' | 'fast'; // New profile setting
 }
 
 export interface BacStatus {
   currentBac: number; // Percentage
+  peakBac: number; // Projected Peak Percentage
+  peakTime: number | null; // Timestamp of peak
   soberTimestamp: number | null; // Estimated time to 0.00
   statusMessage: string;
   color: string;

@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { UserProfile } from '../types';
-import { Save, User, Globe } from 'lucide-react';
+import { Save, User, Globe, Zap } from 'lucide-react';
 
 interface SettingsProps {
   user: UserProfile;
@@ -12,12 +12,14 @@ export const Settings: React.FC<SettingsProps> = ({ user, onSave }) => {
   const [weight, setWeight] = useState(user.weightKg || 70);
   const [gender, setGender] = useState<'male' | 'female'>(user.gender);
   const [language, setLanguage] = useState<'en' | 'fr'>(user.language || 'en');
+  const [drinkingSpeed, setDrinkingSpeed] = useState<'slow' | 'average' | 'fast'>(user.drinkingSpeed || 'average');
 
   const handleSave = () => {
     onSave({
       weightKg: weight,
       gender,
       language,
+      drinkingSpeed,
       isSetup: true
     });
   };
@@ -32,6 +34,11 @@ export const Settings: React.FC<SettingsProps> = ({ user, onSave }) => {
         female: "Female",
         widmark: "Required for Widmark formula calculation",
         lang: "Language",
+        speed: "Drinking Speed",
+        speedDesc: "How fast do you usually finish a drink?",
+        slow: "Slow",
+        avg: "Average",
+        fast: "Fast",
         save: "Save Profile"
     },
     fr: {
@@ -43,6 +50,11 @@ export const Settings: React.FC<SettingsProps> = ({ user, onSave }) => {
         female: "Femme",
         widmark: "Requis pour la formule de Widmark",
         lang: "Langue",
+        speed: "Vitesse de consommation",
+        speedDesc: "À quelle vitesse finissez-vous un verre ?",
+        slow: "Lent",
+        avg: "Moyen",
+        fast: "Rapide",
         save: "Enregistrer"
     }
   }[language];
@@ -130,7 +142,46 @@ export const Settings: React.FC<SettingsProps> = ({ user, onSave }) => {
                 {t.female}
               </button>
             </div>
-            <p className="text-xs text-white/30 text-center mt-2">{t.widmark}</p>
+          </div>
+
+          {/* Drinking Speed */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-white/80 ml-2 flex items-center gap-2">
+                <Zap size={14} /> {t.speed}
+            </label>
+            <p className="text-xs text-white/40 ml-2 mb-2">{t.speedDesc}</p>
+            <div className="grid grid-cols-3 gap-2">
+              <button
+                onClick={() => setDrinkingSpeed('slow')}
+                className={`py-3 rounded-2xl text-sm font-medium transition-all duration-300 border ${
+                  drinkingSpeed === 'slow' 
+                    ? 'bg-green-500/20 border-green-500 text-green-200 shadow-[0_0_15px_rgba(34,197,94,0.3)]' 
+                    : 'bg-black/20 border-white/10 text-white/40 hover:bg-white/5'
+                }`}
+              >
+                🐢 {t.slow}
+              </button>
+              <button
+                onClick={() => setDrinkingSpeed('average')}
+                className={`py-3 rounded-2xl text-sm font-medium transition-all duration-300 border ${
+                  drinkingSpeed === 'average' 
+                    ? 'bg-yellow-500/20 border-yellow-500 text-yellow-200 shadow-[0_0_15px_rgba(234,179,8,0.3)]' 
+                    : 'bg-black/20 border-white/10 text-white/40 hover:bg-white/5'
+                }`}
+              >
+                🚶 {t.avg}
+              </button>
+              <button
+                onClick={() => setDrinkingSpeed('fast')}
+                className={`py-3 rounded-2xl text-sm font-medium transition-all duration-300 border ${
+                  drinkingSpeed === 'fast' 
+                    ? 'bg-red-500/20 border-red-500 text-red-200 shadow-[0_0_15px_rgba(239,68,68,0.3)]' 
+                    : 'bg-black/20 border-white/10 text-white/40 hover:bg-white/5'
+                }`}
+              >
+                🐇 {t.fast}
+              </button>
+            </div>
           </div>
 
           <button

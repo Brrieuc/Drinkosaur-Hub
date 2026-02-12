@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Background } from './components/Background';
 import { Settings } from './components/Settings';
 import { Dashboard } from './components/Dashboard';
@@ -7,21 +7,50 @@ import { AddDrink } from './components/AddDrink';
 import { DrinkList } from './components/DrinkList';
 import { AppView, Drink, UserProfile, BacStatus } from './types';
 import { calculateBac } from './services/bacService';
-import { LayoutDashboard, PlusCircle, History, User } from 'lucide-react';
+import { LayoutDashboard, PlusCircle, History, User, CheckCircle, AlertOctagon } from 'lucide-react';
+
+const Toast = ({ message, type = 'success' }: { message: string, type?: 'success' | 'warning' }) => (
+    <div className={`fixed top-6 left-1/2 transform -translate-x-1/2 z-[200] px-6 py-4 rounded-2xl backdrop-blur-xl border shadow-2xl animate-bounce-in flex items-center gap-3 ${
+        type === 'warning' ? 'bg-red-500/20 border-red-500/30 text-red-100' : 'bg-emerald-500/20 border-emerald-500/30 text-emerald-100'
+    }`}>
+        {type === 'warning' ? <AlertOctagon size={20}/> : <CheckCircle size={20}/>}
+        <span className="font-bold text-sm text-center">{message}</span>
+    </div>
+);
 
 const App: React.FC = () => {
   // -- State --
   const [view, setView] = useState<AppView>(AppView.SETTINGS);
-  
+  const [toast, setToast] = useState<{msg: string, type: 'success' | 'warning'} | null>(null);
+  const prevStatusRef = useRef<string>("");
+
   // Safe parsing for localStorage
   const [user, setUser] = useState<UserProfile>(() => {
     try {
       const saved = localStorage.getItem('drinkosaur_user');
-      // Default to 'en' if not present
-      return saved ? { language: 'en', ...JSON.parse(saved) } : { weightKg: 0, gender: 'male', isSetup: false, language: 'en' };
+      const parsed = saved ? JSON.parse(saved) : null;
+      
+      const defaultProfile: UserProfile = { 
+        weightKg: 0, 
+        gender: 'male', 
+        isSetup: false, 
+        language: 'en', 
+        drinkingSpeed: 'average' 
+      };
+
+      if (parsed) {
+        return { ...defaultProfile, ...parsed };
+      }
+      return defaultProfile;
     } catch (e) {
       console.error("Failed to parse user profile", e);
-      return { weightKg: 0, gender: 'male', isSetup: false, language: 'en' };
+      return { 
+        weightKg: 0, 
+        gender: 'male', 
+        isSetup: false, 
+        language: 'en', 
+        drinkingSpeed: 'average' 
+      };
     }
   });
   
@@ -37,6 +66,8 @@ const App: React.FC = () => {
 
   const [bacStatus, setBacStatus] = useState<BacStatus>({ 
     currentBac: 0, 
+    peakBac: 0,
+    peakTime: null,
     soberTimestamp: null, 
     statusMessage: 'Ready', 
     color: 'from-emerald-400 to-cyan-400' 
@@ -54,11 +85,32 @@ const App: React.FC = () => {
     localStorage.setItem('drinkosaur_drinks', JSON.stringify(drinks));
   }, [drinks]);
 
-  // Periodic BAC update
+  // Periodic BAC update & Status Change Detection
   useEffect(() => {
     const updateBac = () => {
       if (user.isSetup) {
-        setBacStatus(calculateBac(drinks, user));
+        const newStatus = calculateBac(drinks, user);
+        setBacStatus(newStatus);
+        
+        // Check for status change for notification (only if BAC is increasing or high)
+        if (prevStatusRef.current && prevStatusRef.current !== newStatus.statusMessage && newStatus.currentBac > 0.05) {
+             // Avoid spamming on minor fluctuations down, mostly care about going UP tiers
+             // Logic: Simple check if message changed
+             let nextStage = "";
+             // Determine next stage roughly
+             if (newStatus.statusMessage === (user.language === 'fr' ? 'Pompette' : 'Buzzy')) nextStage = user.language === 'fr' ? 'Éméché' : 'Tipsy';
+             else if (newStatus.statusMessage === (user.language === 'fr' ? 'Éméché' : 'Tipsy')) nextStage = user.language === 'fr' ? 'Chargé' : 'Loaded';
+             else if (newStatus.statusMessage === (user.language === 'fr' ? 'Chargé' : 'Loaded')) nextStage = user.language === 'fr' ? 'Ivre' : 'Drunk';
+             else nextStage = user.language === 'fr' ? 'Coma' : 'Blackout';
+
+             const msg = user.language === 'fr' 
+                ? `Il n'y a pas de quoi être fier, vous êtes "${newStatus.statusMessage}" et vous risquez de finir "${nextStage}".`
+                : `Nothing to be proud of, you are "${newStatus.statusMessage}" and might end up "${nextStage}".`;
+             
+             setToast({ msg, type: 'warning' });
+             setTimeout(() => setToast(null), 5000);
+        }
+        prevStatusRef.current = newStatus.statusMessage;
       }
     };
     
@@ -71,19 +123,21 @@ const App: React.FC = () => {
   const handleAddDrink = (drink: Drink) => {
     setDrinks(prev => [...prev, drink]);
     setView(AppView.DASHBOARD);
+    
+    // Success Toast
+    const msg = user.language === 'fr' ? 'Consommation ajoutée !' : 'Drink logged!';
+    setToast({ msg, type: 'success' });
+    setTimeout(() => setToast(null), 3000);
   };
 
   const handleRemoveDrink = (id: string) => {
     setDrinks(prev => prev.filter(d => d.id !== id));
   };
 
-  // Generate simple history data for chart based on current list
   const getHistoryData = useCallback(() => {
      if (drinks.length === 0) return [];
-     
      const points = [];
      const now = Date.now();
-     // Create 5 points covering last 4 hours
      for(let i = 4; i >= 0; i--) {
         const t = now - (i * 60 * 60 * 1000);
         points.push({ time: t, bac: 0 }); 
@@ -115,7 +169,6 @@ const App: React.FC = () => {
         strokeWidth={view === target ? 2.5 : 2} 
         className={`transition-transform duration-300 ${view === target ? 'scale-110 drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]' : ''}`}
       />
-      {/* Active Dot indicator */}
       {view === target && (
         <div className="absolute -bottom-1 w-1 h-1 rounded-full bg-white shadow-[0_0_5px_white]" />
       )}
@@ -126,6 +179,9 @@ const App: React.FC = () => {
     <div className="relative w-full h-screen text-white overflow-hidden flex flex-col font-sans selection:bg-fuchsia-500/30">
       <Background />
 
+      {/* TOAST NOTIFICATION */}
+      {toast && <Toast message={toast.msg} type={toast.type} />}
+
       {/* Main Content Area */}
       <main className="flex-1 relative overflow-hidden flex flex-col">
         {view === AppView.SETTINGS && (
@@ -133,7 +189,13 @@ const App: React.FC = () => {
         )}
         
         {view === AppView.DASHBOARD && (
-          <Dashboard status={bacStatus} historyData={getHistoryData()} language={user.language} />
+          <Dashboard 
+             status={bacStatus} 
+             historyData={getHistoryData()} 
+             language={user.language} 
+             drinks={drinks} 
+             user={user} 
+          />
         )}
 
         {view === AppView.ADD_DRINK && (
@@ -145,13 +207,12 @@ const App: React.FC = () => {
         )}
       </main>
 
-      {/* Floating Bottom Navigation (Island Dock) */}
+      {/* Floating Bottom Navigation */}
       {user.isSetup && (
         <div className="absolute bottom-6 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none">
           <div className="glass-panel-3d rounded-[32px] p-2 flex items-center gap-2 shadow-2xl backdrop-blur-xl pointer-events-auto">
             <NavButton target={AppView.HISTORY} icon={History} label={t.history} />
             
-            {/* Floating Action Button */}
             <div className="mx-2">
               <button 
                 onClick={() => setView(AppView.ADD_DRINK)}
@@ -164,7 +225,6 @@ const App: React.FC = () => {
             
             <NavButton target={AppView.DASHBOARD} icon={LayoutDashboard} label={t.monitor} />
             
-            {/* Profile Button */}
              <button 
               onClick={() => setView(AppView.SETTINGS)}
               aria-label={t.settings}

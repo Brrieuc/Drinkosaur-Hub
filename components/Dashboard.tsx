@@ -1,16 +1,26 @@
 
-import React, { useMemo } from 'react';
-import { BacStatus } from '../types';
-import { Clock, Zap, AlertTriangle } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { BacStatus, Drink, UserProfile } from '../types';
+import { Clock, Zap, AlertTriangle, TrendingUp } from 'lucide-react';
 import { AreaChart, Area, ResponsiveContainer, YAxis } from 'recharts';
+import { BacChartModal } from './BacChartModal';
 
 interface DashboardProps {
   status: BacStatus;
   historyData: { time: number; bac: number }[];
   language?: 'en' | 'fr';
+  drinks?: Drink[];
+  user?: UserProfile;
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ status, historyData, language = 'en' }) => {
+// NOTE: Dashboard now needs full drinks/user props for the modal chart, 
+// but to maintain compatibility with App.tsx without breaking changes immediately,
+// we will handle optional props gracefully.
+// However, App.tsx should ideally pass these. We will update App.tsx in a real scenario,
+// but for this specific "change", we assume App.tsx passes them or we don't show chart if missing.
+
+export const Dashboard: React.FC<DashboardProps> = ({ status, historyData, language = 'en', drinks = [], user }) => {
+  const [showChartModal, setShowChartModal] = useState(false);
   const isFrench = language === 'fr';
 
   const t = {
@@ -18,7 +28,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ status, historyData, langu
     soberAt: isFrench ? 'Sobre à' : 'Sober At',
     limitLoad: isFrench ? 'Charge Limite' : 'Limit Load',
     unitDesc: isFrench ? 'Grammes par Litre' : 'g/100ml',
-    drivingWarning: 'Ne prenez pas le volant'
+    drivingWarning: 'Ne prenez pas le volant',
+    peak: isFrench ? 'Pic' : 'Peak',
+    at: isFrench ? 'à' : '@'
   };
 
   // Logic for display value and unit
@@ -27,6 +39,13 @@ export const Dashboard: React.FC<DashboardProps> = ({ status, historyData, langu
   const displayValue = isFrench ? status.currentBac * 10 : status.currentBac;
   const displayUnit = isFrench ? 'g/L' : '%';
   const displayDecimals = isFrench ? 2 : 3; // 0.50 g/L vs 0.050 %
+
+  // Peak Logic
+  const displayPeak = isFrench ? status.peakBac * 10 : status.peakBac;
+  const showPeak = status.peakBac > status.currentBac + 0.005; // Only show if peak is significantly higher
+  const peakTimeStr = status.peakTime 
+    ? new Date(status.peakTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+    : '';
 
   // Warning Logic: France limit is 0.5 g/L
   const showDrivingWarning = isFrench && displayValue >= 0.5;
@@ -49,14 +68,24 @@ export const Dashboard: React.FC<DashboardProps> = ({ status, historyData, langu
   return (
     <div className="w-full h-full flex flex-col p-6 animate-fade-in relative overflow-hidden">
       
+      {/* Chart Modal */}
+      {showChartModal && user && (
+          <BacChartModal drinks={drinks} user={user} onClose={() => setShowChartModal(false)} />
+      )}
+
       {/* Header */}
       <div className="flex justify-between items-center mb-4 z-10 pt-2">
-        <div>
+        <div className="flex items-center gap-3">
+           <img 
+             src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj3GwalK-_8qkiqtJ9wxjVPg7C3VGn-slPe3XK-DNhm4iSq2f0VBeOEjanUW_uoncmzZu74szYMJhs_o8xYV0RU3g-HZTflVBgh9Tj8wSy43r1MiQrgyrp8HIQJyP6wBQu5bT5tFCrLhskSvzeL8flCHnZ6T-7kheSEkcwm6fQuSGZE-LKrBq6KbB_pg4k/s16000/drinkosaur.png" 
+             alt="Logo" 
+             className="w-10 h-10 rounded-xl shadow-lg border border-white/10"
+           />
            <h1 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-lg">
              Drinkosaur
            </h1>
         </div>
-        <div className={`px-4 py-2 rounded-2xl glass-panel-3d flex items-center gap-2 border border-white/10`}>
+        <div className={`px-4 py-2 rounded-2xl glass-panel-3d flex items-center gap-2 border border-white/10 relative overflow-hidden group`}>
            <div className={`w-2 h-2 rounded-full shadow-[0_0_8px_currentColor] ${status.color.split(' ')[1].replace('to-', 'text-')} animate-pulse`} />
            <span className="text-white font-semibold text-xs uppercase tracking-widest">{status.statusMessage}</span>
         </div>
@@ -67,10 +96,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ status, historyData, langu
         
         {/* Driving Warning Banner (Specific to French limit) */}
         {showDrivingWarning && (
-            <div className="absolute top-0 z-50 animate-bounce-slow">
-                <div className="px-5 py-3 bg-red-600/90 border border-red-400/50 rounded-2xl backdrop-blur-xl shadow-[0_0_30px_rgba(220,38,38,0.5)] flex items-center gap-3">
-                    <AlertTriangle className="text-white fill-white/20" size={20} />
-                    <span className="text-white font-bold uppercase tracking-wider text-sm">
+            <div className="absolute top-6 z-50">
+                <div className="px-3 py-1.5 bg-red-500/10 border border-red-500/30 rounded-full backdrop-blur-md flex items-center gap-2">
+                    <AlertTriangle className="text-red-400" size={14} />
+                    <span className="text-red-200 font-medium text-[10px] uppercase tracking-widest">
                         {t.drivingWarning}
                     </span>
                 </div>
@@ -80,9 +109,15 @@ export const Dashboard: React.FC<DashboardProps> = ({ status, historyData, langu
         {/* Glow behind the sphere */}
         <div className={`absolute w-64 h-64 rounded-full blur-[80px] opacity-40 bg-gradient-to-tr ${liquidGradient} animate-pulse`} />
 
-        {/* The Sphere Container */}
-        <div className="relative w-72 h-72 md:w-80 md:h-80 glass-sphere rounded-full overflow-hidden flex items-center justify-center transform transition-transform duration-500 hover:scale-[1.02]">
+        {/* The Sphere Container (Clickable) */}
+        <div 
+            onClick={() => user && setShowChartModal(true)}
+            className="relative w-72 h-72 md:w-80 md:h-80 glass-sphere rounded-full overflow-hidden flex items-center justify-center transform transition-all duration-500 hover:scale-[1.02] cursor-pointer active:scale-95 group"
+        >
           
+          {/* Hint that it is clickable */}
+          <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity z-30 pointer-events-none" />
+
           {/* Specular Highlight (Reflection) Top Left */}
           <div className="absolute top-[10%] left-[10%] w-[40%] h-[25%] bg-gradient-to-b from-white/40 to-transparent rounded-[100%] rotate-[-45deg] blur-[2px] z-20 pointer-events-none" />
           
@@ -122,6 +157,16 @@ export const Dashboard: React.FC<DashboardProps> = ({ status, historyData, langu
                 <span className="text-white/40 text-[10px] font-mono mt-1 tracking-wider opacity-60">
                 {t.unitDesc}
                 </span>
+
+                {/* Moved Peak Display Here */}
+                {showPeak && (
+                  <div className="mt-2 flex items-center gap-1 bg-black/30 px-2 py-0.5 rounded-full border border-white/5 animate-pulse">
+                      <TrendingUp size={10} className="text-red-300" />
+                      <span className="text-[10px] text-red-100 font-mono">
+                          {t.peak}: {displayPeak.toFixed(displayDecimals)} {t.at} {peakTimeStr}
+                      </span>
+                  </div>
+                )}
             </div>
           </div>
         </div>
@@ -140,24 +185,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ status, historyData, langu
            </div>
         </div>
       </div>
-
-      {/* Mini Chart - Styled */}
-      {historyData.length > 1 && (
-        <div className="h-24 w-full mt-4 rounded-3xl overflow-hidden glass-input p-2 opacity-80">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={historyData}>
-              <defs>
-                <linearGradient id="colorBac" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.6}/>
-                  <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
-                </linearGradient>
-              </defs>
-              <Area type="monotone" dataKey="bac" stroke="#c084fc" strokeWidth={3} fillOpacity={1} fill="url(#colorBac)" />
-              <YAxis domain={[0, 0.15]} hide />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-      )}
     </div>
   );
 };

@@ -1,11 +1,10 @@
 
-
-export const METABOLISM_RATE = 0.015; // Average elimination rate per hour
+export const METABOLISM_RATE = 0.015; // Average elimination rate per hour in % (approx 0.15 g/L/h)
 export const ALCOHOL_DENSITY = 0.789; // g/ml
 
 export const GENDER_CONSTANT = {
-  male: 0.68,
-  female: 0.55,
+  male: 0.7,   
+  female: 0.6, 
 };
 
 export const MAX_SAFE_BAC = 0.08;
@@ -15,6 +14,15 @@ export const THEME_COLORS = {
   buzz: 'from-yellow-400 to-orange-400',
   drunk: 'from-pink-500 to-rose-500',
   danger: 'from-red-600 to-purple-600'
+};
+
+// Consumption Speeds in ml/minute
+export const CONSUMPTION_RATES = {
+    beer: { slow: 17, average: 21, fast: 25 },     // Demi (250ml) ~12min avg
+    wine: { slow: 6, average: 7, fast: 8 },        // Glass (125ml) ~18min avg
+    cocktail: { slow: 5, average: 7.5, fast: 10 }, // Glass (150ml) ~20min avg
+    spirit: { slow: 10, average: 20, fast: 40 },   // Usually faster or sipped strictly
+    other: { slow: 10, average: 15, fast: 20 }
 };
 
 // --- DATA LIBRARIES ---
@@ -34,6 +42,14 @@ export interface MixerReference {
   color: string;
   carbonated?: boolean;
 }
+
+export const FUNNY_EXPRESSIONS = [
+  "bleu métal", "défoncé", "arraché", "satellisé", "imbibé", 
+  "plein comme un oeuf", "bourré", "beurré complet", "blindé", 
+  "cuit", "en pétard", "pinté", "pété", "raide", "rétamé", 
+  "torché", "brindezingue", "explosé", "queue de pelle", 
+  "cabane sur le chien", "pas loupé"
+];
 
 export const BEER_LIBRARY: DrinkReference[] = [
   // Classiques / Lagers (Gold/Yellow)
@@ -133,7 +149,7 @@ export const BEER_PRESETS = [
   { label: 'Demi', label_en: 'Half (250)', ml: 250 },
   { label: 'Bouteille', label_en: 'Bottle', ml: 330 },
   { label: 'Pinte', label_en: 'Pint (500)', ml: 500 },
-  { label: 'Maxi', label_en: 'Liter', ml: 1000 },
+  { label: 'Litron', label_en: 'Liter', ml: 1000 },
 ];
 
 // Presets are originally in English, adding French mapping
